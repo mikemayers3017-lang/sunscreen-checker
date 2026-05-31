@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunscreen SPF Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .sun-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .spf-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .spf-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .spf-item label {
+            margin: 0;
+            color: #999;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .spf-item .value {
+            margin-top: 8px;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .protection-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .uva-indicator {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .uva-indicator.none {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .recommendation {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid #c62828;
+        }
+
+        .info-section {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .info-section h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-section ul {
+            list-style: none;
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.8;
+        }
+
+        .info-section li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-section li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .spf-display {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="sun-icon">☀️</div>
+            <h1>Sunscreen SPF Checker</h1>
+            <p>Check your sunscreen's SPF level and get recommendations</p>
+        </div>
+
+        <form id="spfForm">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input 
+                    type="text" 
+                    id="productName" 
+                    placeholder="e.g., Coppertone Sport, La Roche-Posay Anthelios"
+                    value=""
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="spfValue">SPF Level</label>
+                <input 
+                    type="number" 
+                    id="spfValue" 
+                    placeholder="e.g., 30, 50, 75"
+                    min="0"
+                    step="0.5"
+                    required
+                >
+            </div>
+
+            <button type="submit">Check SPF</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <p>Checking SPF level...</p>
+        </div>
+
+        <div class="result" id="result">
+            <h3 id="resultTitle"></h3>
+            <div id="resultContent"></div>
+        </div>
+
+        <div class="info-section">
+            <h4>💡 SPF Information</h4>
+            <ul>
+                <li><strong>SPF 15-29:</strong> Moderate protection, basic daily use</li>
+                <li><strong>SPF 30-49:</strong> High protection, regular outdoor activities</li>
+                <li><strong>SPF 50+:</strong> Very high protection, extended sun exposure</li>
+                <li><strong>Broad Spectrum:</strong> Protects against both UVA and UVB rays</li>
+                <li><strong>Reapply:</strong> Every 2 hours or after swimming/sweating</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('spfForm');
+        const resultDiv = document.getElementById('result');
+        const loading = document.getElementById('loading');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const productName = document.getElementById('productName').value || 'Unknown Product';
+            const spfValue = document.getElementById('spfValue').value;
+
+            loading.classList.add('show');
+            resultDiv.classList.remove('show');
+
+            try {
+                const response = await fetch('/api/check-spf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        product_name: productName,
+                        spf_value: spfValue
+                    })
+                });
+
+                const data = await response.json();
+
+                loading.classList.remove('show');
+
+                if (data.success) {
+                    displayResult(data);
+                } else {
+                    displayError(data.error);
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                displayError('An error occurred. Please try again.');
+                console.error('Error:', error);
+            }
+        });
+
+        function displayResult(data) {
+            const categoryName = {
+                'low': 'Low Protection',
+                'medium': 'Moderate Protection',
+                'high': 'High Protection',
+                'very_high': 'Very High Protection'
+            };
+
+            const resultTitle = document.getElementById('resultTitle');
+            const resultContent = document.getElementById('resultContent');
+
+            resultTitle.textContent = `${data.product_name} Analysis`;
+
+            const uvaLabel = data.uva_protection ? 
+                '<span class="uva-indicator">✓ UVA Protection</span>' : 
+                '<span class="uva-indicator none">✗ Limited UVA Info</span>';
+
+            resultContent.innerHTML = `
+                <div class="protection-badge">${data.protection_level} Protection</div>
+                ${uvaLabel}
+                
+                <div class="spf-display">
+                    <div class="spf-item">
+                        <label>SPF Value</label>
+                        <div class="value">${data.spf}</div>
+                    </div>
+                    <div class="spf-item">
+                        <label>Category</label>
+                        <div class="value" style="font-size: 1.2em;">${categoryName[data.category]}</div>
+                    </div>
+                </div>
+
+                <div class="recommendation">
+                    <strong>Recommendation:</strong><br>
+                    ${data.recommendation}
+                </div>
+            `;
+
+            resultDiv.classList.add('show');
+        }
+
+        function displayError(error) {
+            const resultTitle = document.getElementById('resultTitle');
+            const resultContent = document.getElementById('resultContent');
+
+            resultTitle.textContent = 'Error';
+            resultContent.innerHTML = `<div class="error">${error}</div>`;
+
+            resultDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>
